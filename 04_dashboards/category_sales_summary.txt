@@ -1,5 +1,5 @@
 - dashboard: category_sales_summary
-  title: Resumen de Ventas por Categoría (Full Data)
+  title: Resumen de Ventas por Categoría
   layout: newspaper
   preferred_viewer: dashboards-next
   
@@ -19,35 +19,19 @@
     field: sales_region.category_name
 
   elements:
-  - title: Análisis de Ventas (YTD & Weekly)
-    name: full_sales_analysis
+  - title: Ventas por Categoría (TY vs LY)
+    name: sales_by_category
     model: mx-fin-8303
     explore: sales_region
     type: looker_grid
-    fields: [
-      sales_region.group_name,
-      sales_region.team_name,
-      sales_region.category_name,
-      sales_region.sales_ytd_ty,
-      sales_region.sales_ytd_ly,
-      sales_region.sales_ytd_variance_pct,
-      sales_region.gp_ytd_ty,
-      sales_region.gp_ytd_ly,
-      sales_region.gp_variance_pct,
-      sales_region.units_ytd_ty,
-      sales_region.units_ytd_ly,
-      sales_region.units_variance_pct,
-      sales_region.sales_ty,
-      sales_region.sales_ly,
-      sales_region.sales_variance_pct
-    ]
-    sorts: [sales_region.sales_ytd_ty desc]
+    fields: [sales_region.category_name, sales_region.sales_ty, sales_region.sales_ly]
+    sorts: [sales_region.sales_ty desc]
     limit: 500
     show_view_names: false
     show_row_numbers: true
     transpose: false
     truncate_text: true
-    size_to_fit: false
+    size_to_fit: true
     table_theme: white
     header_font_color: "#FFFFFF"
     header_background_color: "#202124"
@@ -57,4 +41,4 @@
     row: 0
     col: 0
     width: 24
-    height: 15
+    height: 12
