@@ -6,14 +6,10 @@ view: sales_region {
           MIN(fiscal.year.start_date) as y_start, 
           MIN(fiscal.week.start_date) as ty_start,
           MAX(fiscal.week.end_date) as ty_end,
-          -- Calcular inicio de L8W (8 semanas atrás)
           DATE_SUB(MAX(fiscal.week.end_date), INTERVAL 55 DAY) as ty_l8w_start,
-          -- Para LY
           MIN(fiscal.misc.prior_year_date) as ly_start,
           MAX(fiscal.misc.prior_year_date) as ly_end,
-          -- Calcular inicio de L8W LY
           DATE_SUB(MAX(fiscal.misc.prior_year_date), INTERVAL 55 DAY) as ly_l8w_start,
-          -- Inicio del año fiscal anterior
           (SELECT MIN(calendar_ly.fiscal.misc.prior_year_date) 
            FROM `azpr-tdata-mx-fin-8303.cdsa_enterprise_ref.calendar` as calendar_ly
            WHERE calendar_ly.date = (SELECT MIN(calendar_ty.fiscal.year.start_date) 
@@ -30,18 +26,23 @@ view: sales_region {
         e.team_name,
         e.group_name,
         e.category_name,
-        -- Period Type para Semana Seleccionada
+        -- year_type: Identifica si el dato pertenece al bloque de fechas del año actual o anterior
+        CASE
+          WHEN a.calendar_date BETWEEN p.y_start AND p.ty_end THEN 'TY'
+          WHEN a.calendar_date BETWEEN p.ly_y_start AND p.ly_end THEN 'LY'
+        END as year_type,
+        -- period_type: Solo para la semana seleccionada
         CASE
           WHEN a.calendar_date BETWEEN p.ty_start AND p.ty_end THEN 'TY'
           WHEN a.calendar_date BETWEEN p.ly_start AND p.ly_end THEN 'LY'
         END as period_type,
-        -- Bandera para L8W (Últimas 8 semanas)
+        -- is_l8w: Identifica si está en el rango de 8 semanas
         CASE 
           WHEN (a.calendar_date BETWEEN p.ty_l8w_start AND p.ty_end) 
             OR (a.calendar_date BETWEEN p.ly_l8w_start AND p.ly_end) THEN 'yes' 
           ELSE 'no' 
         END as is_l8w,
-        -- Banderas para YTD
+        -- Banderas para YTD (se mantienen para compatibilidad)
         CASE WHEN a.calendar_date BETWEEN p.y_start AND p.ty_end THEN 1 ELSE 0 END as is_ytd_ty,
         CASE WHEN a.calendar_date BETWEEN p.ly_y_start AND p.ly_end THEN 1 ELSE 0 END as is_ytd_ly,
         SUM(a.net_sales) as sales,
@@ -53,12 +54,11 @@ view: sales_region {
       LEFT JOIN `azpr-tdata-mx-fin-8303.cur_merchandising_catalog_product.xs__tazitem` d ON d.item = a.sku
       LEFT JOIN `azpr-tdata-mx-fin-8303.ba_merchandising_mx.cat__merch_team` e ON d.major_dept = e.major_category_nb AND d.minor_dept = e.minor_category_nb
       WHERE
-        -- Filtro de fecha consolidado usando el JOIN p
         (a.calendar_date BETWEEN p.y_start AND p.ty_end
          OR a.calendar_date BETWEEN p.ly_y_start AND p.ly_end)
         AND b.country_code = 'MEX'
         AND b.samestore_flag = 'S'
-      GROUP BY 1, 2, 3, 4, 5, 6, 7, 8, 9
+      GROUP BY 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
     ;;
   }
 }
