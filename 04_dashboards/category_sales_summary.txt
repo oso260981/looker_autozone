@@ -1,0 +1,67 @@
+- dashboard: category_sales_summary
+  title: Resumen de Ventas por Categoría
+  layout: newspaper
+  preferred_viewer: dashboards-next
+  
+  filters:
+  - name: Año Fiscal
+    title: Año Fiscal
+    type: field_filter
+    default_value: '2026'
+    model: mx-fin-8303
+    explore: sales_region
+    field: sales_region.filter_fiscal_year
+  - name: Semana Fiscal
+    title: Semana Fiscal
+    type: field_filter
+    default_value: '28'
+    model: mx-fin-8303
+    explore: sales_region
+    field: sales_region.filter_fiscal_week
+  - name: Category
+    title: Categoría
+    type: field_filter
+    model: mx-fin-8303
+    explore: sales_region
+    field: sales_region.category_name
+
+  elements:
+  - title: Ventas por Categoría (TY vs LY)
+    name: sales_by_category
+    model: mx-fin-8303
+    explore: sales_region
+    type: looker_grid
+    fields: [sales_region.category_name, sales_region.sales_ty, sales_region.sales_ly, sales_region.sales_variance_pct]
+    sorts: [sales_region.sales_ty desc]
+    limit: 500
+    show_view_names: false
+    show_row_numbers: true
+    transpose: false
+    truncate_text: true
+    size_to_fit: true
+    table_theme: white
+    header_font_color: "#FFFFFF"
+    header_background_color: "#202124"
+    listen:
+      Año Fiscal: sales_region.filter_fiscal_year
+      Semana Fiscal: sales_region.filter_fiscal_week
+      Category: sales_region.category_name
+    row: 0
+    col: 0
+    width: 24
+    height: 10
+
+  - title: Total Ventas YTD
+    name: total_sales_ytd
+    model: mx-fin-8303
+    explore: sales_region
+    type: single_value
+    fields: [sales_region.sales_ytd_ty, sales_region.sales_ytd_variance_pct]
+    listen:
+      Año Fiscal: sales_region.filter_fiscal_year
+      Semana Fiscal: sales_region.filter_fiscal_week
+      Category: sales_region.category_name
+    row: 10
+    col: 0
+    width: 12
+    height: 4
