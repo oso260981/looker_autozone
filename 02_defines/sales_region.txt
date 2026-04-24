@@ -31,6 +31,12 @@ view: +sales_region {
   }
  
  
+  dimension: is_l8w {
+    type: string
+    sql: 'no' ;; # Placeholder: Cambiar por lógica de últimas 8 semanas
+    label: "Is Last 8 Weeks?"
+  }
+
   dimension: period_type {
     label: "Tipo de Periodo (TY/LY)"
     type: string
