@@ -33,7 +33,7 @@ view: +sales_region {
  
   dimension: is_l8w {
     type: string
-    sql: 'no' ;; # Placeholder: Cambiar por lógica de últimas 8 semanas
+    sql: ${TABLE}.is_l8w ;;
     label: "Is Last 8 Weeks?"
   }
 
@@ -204,12 +204,47 @@ measure: sales_l8w_variance_pct {
     value_format_name: percent_1
     drill_fields: [dimension_selector,gross_profit_ty,gross_profit_ly,gross_profit_variance_pct]
     html:
-      {% if value <0  %}
-<p style="color: red;"> {{ rendered_value }} </p>
+      {% if value < 0  %}
+      <p style="color: red;"> {{ rendered_value }} </p>
       {% else %}
-<p> {{ rendered_value }} </p>
+      <p> {{ rendered_value }} </p>
       {% endif %} ;;
   }
+
+# --- Last 8 Weeks (L8W) Gross Profit ---
+
+measure: gross_profit_l8w_ty {
+  group_label: "Gross Profit L8W"
+  label: "L8wks 2026 GP"
+  type: sum
+  sql: ${TABLE}.gross_profit ;;
+  filters: [period_type: "TY", is_l8w: "yes"]
+  value_format_name: usd_0
+}
+
+measure: gross_profit_l8w_ly {
+  group_label: "Gross Profit L8W"
+  label: "L8wks 2025 GP"
+  type: sum
+  sql: ${TABLE}.gross_profit ;;
+  filters: [period_type: "LY", is_l8w: "yes"]
+  value_format_name: usd_0
+}
+
+measure: gross_profit_l8w_variance_pct {
+  group_label: "Gross Profit L8W"
+  label: "L8wks GP % Chg"
+  type: number
+  sql: (${gross_profit_l8w_ty} - ${gross_profit_l8w_ly}) / NULLIF(${gross_profit_l8w_ly}, 0) ;;
+  value_format_name: percent_1
+  drill_fields: [dimension_selector, gross_profit_l8w_ty, gross_profit_l8w_ly, gross_profit_l8w_variance_pct]
+  html:
+  {% if value < 0  %}
+  <p style="color: red;"> {{ rendered_value }} </p>
+  {% else %}
+  <p> {{ rendered_value }} </p>
+  {% endif %} ;;
+}
  
  
   measure: units_ty {
