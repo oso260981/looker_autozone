@@ -2,47 +2,31 @@ include: "/01_metadata/sales_region.view"
 
 view: +sales_region {
 
-  # --- Dimensiones del Excel (Placeholders) ---
+  # ==========================================================
+  # SECCIÓN 1: DIMENSIONES ORIGINALES (CONECTADAS)
+  # ==========================================================
 
   dimension: group_name {
     type: string
-    sql: ${TABLE}.group_name ;; # Ya existe en el SQL
+    sql: ${TABLE}.group_name ;;
     label: "Group"
-  }
-
-  dimension: director {
-    type: string
-    sql: '0' ;; # Placeholder
-    label: "Director"
-  }
-
-  dimension: cm {
-    type: string
-    sql: '0' ;; # Placeholder
-    label: "CM"
-  }
-
-  dimension: customer_type {
-    type: string
-    sql: '0' ;; # Placeholder
-    label: "Customer Type"
   }
 
   dimension: category_name {
     type: string
-    sql: ${TABLE}.category_name ;; # Ya existe
+    sql: ${TABLE}.category_name ;;
     label: "Category"
   }
 
   dimension: team_name {
     type: string
-    sql: ${TABLE}.team_name ;; # Ya existe
+    sql: ${TABLE}.team_name ;;
     label: "Team"
   }
 
   dimension: city {
     type: string
-    sql: ${TABLE}.city ;; # Ya existe
+    sql: ${TABLE}.city ;;
     label: "City"
   }
 
@@ -64,7 +48,31 @@ view: +sales_region {
     sql: ${TABLE}.is_ytd_ly ;;
   }
 
-  # --- Filtros ---
+  # ==========================================================
+  # SECCIÓN 2: DIMENSIONES NUEVAS (PLACEHOLDERS EN 0)
+  # ==========================================================
+
+  dimension: director {
+    type: string
+    sql: '0' ;; 
+    label: "Director"
+  }
+
+  dimension: cm {
+    type: string
+    sql: '0' ;; 
+    label: "CM"
+  }
+
+  dimension: customer_type {
+    type: string
+    sql: '0' ;; 
+    label: "Customer Type"
+  }
+
+  # ==========================================================
+  # SECCIÓN 3: FILTROS Y MEDIDAS
+  # ==========================================================
 
   filter: filter_fiscal_year {
     type: number
