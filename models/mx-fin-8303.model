@@ -1,0 +1,9 @@
+connection: "tu_conexion_aqui"
+
+include: "/01_metadata/*.view"
+include: "/03_business_logic/*.lkml"
+
+explore: sales_explo {
+  label: "Exploración de Ventas"
+  # Aquí irán los joins conforme me pases las tablas
+}
