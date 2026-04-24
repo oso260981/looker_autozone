@@ -1,0 +1,76 @@
+view: calendar {
+  derived_table: {
+    sql: 
+      SELECT
+        date,
+        day_name,
+        -- ===== FISCAL YEAR =====
+        fiscal.year.year AS fiscal_year,
+        fiscal.year.year_label AS fiscal_year_label,
+        fiscal.year.day_of_year AS fiscal_day_of_year,
+        fiscal.year.end_date AS fiscal_year_end_date,
+        -- ===== FISCAL QUARTER =====
+        fiscal.quarter.quarter_of_year AS fiscal_quarter_of_year,
+        fiscal.quarter.quarter_label AS fiscal_quarter_label,
+        fiscal.quarter.day_of_quarter AS fiscal_day_of_quarter,
+        fiscal.quarter.start_date AS fiscal_quarter_start_date,
+        fiscal.quarter.end_date AS fiscal_quarter_end_date,
+        -- ===== FISCAL PERIOD =====
+        fiscal.period.period_of_year AS fiscal_period_of_year,
+        fiscal.period.period_label AS fiscal_period_label,
+        fiscal.period.day_of_period AS fiscal_day_of_period,
+        fiscal.period.start_date AS fiscal_period_start_date,
+        fiscal.period.end_date AS fiscal_period_end_date,
+        -- ===== FISCAL WEEK =====
+        fiscal.week.week_of_year AS fiscal_week_of_year,
+        fiscal.week.week_of_year_label AS fiscal_week_of_year_label,
+        fiscal.week.week_of_period AS fiscal_week_of_period,
+        fiscal.week.week_of_period_label AS fiscal_week_of_period_label,
+        fiscal.week.start_date AS fiscal_week_start_date,
+        fiscal.week.end_date AS fiscal_week_end_date,
+        -- ===== FISCAL MISC =====
+        fiscal.misc.prior_year_date AS fiscal_prior_year_date,
+        fiscal.misc.rolling_13_period_label AS fiscal_rolling_13_period_label
+      FROM `azpr-tdata-mx-fin-8303.cdsa_enterprise_ref.calendar`
+    ;;
+  }
+
+  dimension_group: date {
+    type: time
+    timeframes: [raw, date, week, month, quarter, year]
+    convert_tz: no
+    datatype: date
+    sql: ${TABLE}.date ;;
+  }
+
+  dimension: day_name {
+    type: string
+    sql: ${TABLE}.day_name ;;
+  }
+
+  # --- Fiscal Year Dimensions ---
+  dimension: fiscal_year {
+    type: number
+    sql: ${TABLE}.fiscal_year ;;
+    group_label: "Fiscal"
+  }
+
+  dimension: fiscal_year_label {
+    type: string
+    sql: ${TABLE}.fiscal_year_label ;;
+    group_label: "Fiscal"
+  }
+
+  # --- Fiscal Period/Week Dimensions ---
+  dimension: fiscal_period_label {
+    type: string
+    sql: ${TABLE}.fiscal_period_label ;;
+    group_label: "Fiscal"
+  }
+
+  dimension: fiscal_week_of_year_label {
+    type: string
+    sql: ${TABLE}.fiscal_week_of_year_label ;;
+    group_label: "Fiscal"
+  }
+}

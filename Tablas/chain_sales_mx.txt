@@ -1,0 +1,24 @@
+Tabla:`azpr-tdata-mx-fin-8303.ba_finance_mx.chain_sales_mx`
+
+Estructura:
+
+table_name	column_name	data_type	is_nullable
+chain_sales_mx	sku	INT64	YES
+chain_sales_mx	store	INT64	YES
+chain_sales_mx	trans	INT64	YES
+chain_sales_mx	calendar_date	DATETIME	YES
+chain_sales_mx	type_sale	STRING	YES
+chain_sales_mx	promo_flag	STRING	YES
+chain_sales_mx	quantity	INT64	YES
+chain_sales_mx	equalized_units	NUMERIC	YES
+chain_sales_mx	net_sales	NUMERIC	YES
+chain_sales_mx	net_cost	NUMERIC	YES
+chain_sales_mx	net_cost_adj	NUMERIC	YES
+chain_sales_mx	gross_profit	NUMERIC	YES
+chain_sales_mx	gross_profit_adj	NUMERIC	YES
+chain_sales_mx	regular_sales	NUMERIC	YES
+chain_sales_mx	regular_sales_adj	NUMERIC	YES
+chain_sales_mx	deal_id	INT64	YES
+chain_sales_mx	deal_desc	STRING	YES
+chain_sales_mx	customer_type	STRING	YES
+chain_sales_mx	customer_number	INT64	YES

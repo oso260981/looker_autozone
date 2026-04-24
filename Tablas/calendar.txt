@@ -1,0 +1,14 @@
+Tabla:`azpr-tdata-mx-fin-8303.cdsa_enterprise_ref.calendar`
+
+Estructura:
+
+table_name	column_name	data_type	is_nullable
+calendar	date_id	INT64	YES
+calendar	date	DATE	YES
+calendar	day_name	STRING	YES
+calendar	day_name_abbr	STRING	YES
+calendar	day_of_week	INT64	YES
+calendar	iso_day_of_week_nb	INT64	YES
+calendar	calendar	"STRUCT<year STRUCT<year INT64, day_of_year INT64, start_date DATE, end_date DATE>, quarter STRUCT<quarter_of_year INT64, day_of_quarter INT64, start_date DATE, end_date DATE>, month STRUCT<name STRING, name_abbr STRING, month_of_year INT64, day_of_month INT64, start_date DATE, end_date DATE>, week STRUCT<week_of_year INT64, week_of_month INT64, start_date DATE, end_date DATE>, misc STRUCT<holiday_name STRING, is_state_holiday STRING, is_federal_holiday STRING>>"	YES
+calendar	fiscal	"STRUCT<year STRUCT<year INT64, year_label STRING, day_of_year INT64, start_date DATE, end_date DATE>, quarter STRUCT<quarter_of_year INT64, quarter_label STRING, day_of_quarter INT64, start_date DATE, end_date DATE>, period STRUCT<period_of_year INT64, period_label STRING, day_of_period INT64, start_date DATE, end_date DATE>, week STRUCT<week_of_year INT64, week_of_year_label STRING, week_of_period INT64, week_of_period_label STRING, start_date DATE, end_date DATE>, misc STRUCT<prior_year_date DATE, rolling_13_period_label STRING>>"	YES
+calendar	metadata	"STRUCT<bi_create_ts TIMESTAMP, bi_lastmt_ts TIMESTAMP>"	YES

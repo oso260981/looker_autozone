@@ -4,6 +4,13 @@ include: "/01_metadata/*.view"
 include: "/03_business_logic/*.lkml"
 
 explore: sales_explo {
-  label: "Exploración de Ventas"
-  # Aquí irán los joins conforme me pases las tablas
+  label: "Exploración de Ventas México"
+  from: chain_sales_mx
+  view_name: chain_sales_mx
+
+  join: calendar {
+    type: left_outer
+    relationship: many_to_one
+    sql_on: DATE(${chain_sales_mx.calendar_raw}) = ${calendar.date_date} ;;
+  }
 }

@@ -1,0 +1,115 @@
+view: chain_sales_mx {
+  sql_table_name: `azpr-tdata-mx-fin-8303.ba_finance_mx.chain_sales_mx` ;;
+
+  # --- Dimensiones ---
+
+  dimension: sku {
+    type: number
+    sql: ${TABLE}.sku ;;
+    label: "SKU"
+  }
+
+  dimension: store {
+    type: number
+    sql: ${TABLE}.store ;;
+    label: "Tienda"
+  }
+
+  dimension: trans {
+    type: number
+    sql: ${TABLE}.trans ;;
+    label: "Transacción"
+  }
+
+  dimension_group: calendar {
+    type: time
+    timeframes: [
+      raw,
+      date,
+      week,
+      month,
+      quarter,
+      year
+    ]
+    datatype: datetime
+    sql: ${TABLE}.calendar_date ;;
+    label: "Fecha de Venta"
+  }
+
+  dimension: type_sale {
+    type: string
+    sql: ${TABLE}.type_sale ;;
+    label: "Tipo de Venta"
+  }
+
+  dimension: promo_flag {
+    type: string
+    sql: ${TABLE}.promo_flag ;;
+    label: "Indicador de Promoción"
+  }
+
+  dimension: deal_id {
+    type: number
+    sql: ${TABLE}.deal_id ;;
+    label: "ID de Oferta"
+  }
+
+  dimension: deal_desc {
+    type: string
+    sql: ${TABLE}.deal_desc ;;
+    label: "Descripción de Oferta"
+  }
+
+  dimension: customer_type {
+    type: string
+    sql: ${TABLE}.customer_type ;;
+    label: "Tipo de Cliente"
+  }
+
+  dimension: customer_number {
+    type: number
+    sql: ${TABLE}.customer_number ;;
+    label: "Número de Cliente"
+  }
+
+  # --- Medidas (Métricas) ---
+
+  measure: count {
+    type: count
+    label: "Conteo de Registros"
+  }
+
+  measure: total_quantity {
+    type: sum
+    sql: ${TABLE}.quantity ;;
+    label: "Cantidad Total"
+  }
+
+  measure: total_net_sales {
+    type: sum
+    sql: ${TABLE}.net_sales ;;
+    value_format_name: usd
+    label: "Ventas Netas Totales"
+  }
+
+  measure: total_net_cost {
+    type: sum
+    sql: ${TABLE}.net_cost ;;
+    value_format_name: usd
+    label: "Costo Neto Total"
+  }
+
+  measure: total_gross_profit {
+    type: sum
+    sql: ${TABLE}.gross_profit ;;
+    value_format_name: usd
+    label: "Utilidad Bruta Total"
+  }
+
+  measure: margin_percentage {
+    type: number
+    sql: SAFE_DIVIDE(${total_gross_profit}, ${total_net_sales}) ;;
+    value_format_name: percent_2
+    label: "Porcentaje de Margen"
+  }
+}
