@@ -25,6 +25,8 @@
     explore: sales_region
     type: looker_grid
     fields: [
+      sales_region.team_name,
+      sales_region.group_name,
       sales_region.category_name,
       sales_region.sales_ty,
       sales_region.sales_variance_pct,
@@ -37,10 +39,11 @@
       sales_region.UR_ty,
       sales_region.UR_variance_pct
     ]
-    sorts: [sales_region.sales_ty desc]
+    sorts: [sales_region.team_name, sales_region.group_name, sales_region.sales_ty desc]
+    subtotals: [sales_region.team_name, sales_region.group_name]
     limit: 500
     show_view_names: false
-    show_row_numbers: true
+    show_row_numbers: false
     transpose: false
     truncate_text: true
     size_to_fit: true
