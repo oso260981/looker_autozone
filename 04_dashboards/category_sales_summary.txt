@@ -11,13 +11,6 @@
     model: mx-fin-8303
     explore: sales_region
     field: sales_region.filter_fiscal_year
-  - name: Semana Fiscal
-    title: Semana Fiscal
-    type: field_filter
-    default_value: '31'
-    model: mx-fin-8303
-    explore: sales_region
-    field: sales_region.filter_fiscal_week
   - name: Category
     title: Categoría
     type: field_filter
@@ -44,7 +37,6 @@
     header_background_color: "#202124"
     listen:
       Año Fiscal: sales_region.filter_fiscal_year
-      Semana Fiscal: sales_region.filter_fiscal_week
       Category: sales_region.category_name
     row: 0
     col: 0
