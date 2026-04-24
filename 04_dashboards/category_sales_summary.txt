@@ -1,64 +1,615 @@
+---
 - dashboard: category_sales_summary
-  title: Resumen de Ventas por Categoría (Estilo Report Sales)
-  layout: newspaper
+  title: Category Sales Summary
   preferred_viewer: dashboards-next
-  
+  description: ''
+  preferred_slug: category_summary_v1
+  layout: newspaper
+  tabs:
+  - name: Category Sales Weekly
+    label: Category Sales Weekly
+  - name: Category Sales Daily
+    label: Category Sales Daily
+  elements:
+  - title: Category Sales Weekly
+    name: Category Sales Weekly
+    model: mx-fin-8303
+    explore: sales_region
+    type: looker_grid
+    fields: [sales_region.dimension_selector, sales_region.sales_ty, sales_region.sales_variance_pct,
+      sales_region.gross_profit_ty, sales_region.gross_profit_variance_pct, sales_region.GM_ty,
+      sales_region.GM_variance_pct, sales_region.units_ty, sales_region.units_variance_pct,
+      sales_region.UR_ty, sales_region.UR_variance_pct]
+    filters:
+      sales_region.filter_fiscal_year: '2026'
+      sales_region.p_dimension: city
+    sorts: [sales_region.dimension_selector]
+    limit: 500
+    column_limit: 50
+    total: true
+    show_view_names: false
+    show_row_numbers: false
+    transpose: false
+    truncate_text: true
+    hide_totals: false
+    hide_row_totals: false
+    size_to_fit: true
+    table_theme: white
+    limit_displayed_rows: false
+    enable_conditional_formatting: false
+    header_text_alignment: left
+    header_font_size: '12'
+    rows_font_size: 12
+    conditional_formatting_include_totals: false
+    conditional_formatting_include_nulls: false
+    show_sql_query_menu_options: false
+    show_totals: true
+    show_row_totals: true
+    truncate_header: false
+    minimum_column_width: 75
+    series_labels: {}
+    series_column_widths:
+      sales_region.gross_profit_variance_pct: 144
+    series_cell_visualizations:
+      sales_region.sales_ly:
+        is_active: false
+    series_text_format:
+      sales_region.dimension_selector: {}
+    table_enable_pagination: false
+    table_page_size_options: 20, 50, 100
+    limit_displayed_rows_values:
+      show_hide: hide
+      first_last: first
+      num_rows: 0
+    table_column_hover_highlight_enable: false
+    table_show_headers: true
+    header_font_color: "#FFFFFF"
+    header_background_color: "#202124"
+    header_font_bold: false
+    header_font_italic: false
+    cell_font_size: '12'
+    cell_font_weight: ''
+    cell_font_style: ''
+    cell_text_alignment: ''
+    table_custom_border_enable: false
+    table_custom_border_width:
+    table_custom_border_color: "#dde2eb"
+    table_custom_border_style: solid
+    conditional_formatting: [{type: along a scale..., value: !!null '', fields: !!null '',
+        apply_formatting_to_row: false, cell_format: {background_color: "#F37F00",
+          font_color: !!null '', color_application: {collection_id: az-company-colors,
+            palette_id: az-company-colors-diverging-0, options: {mirror: false, reverse: false,
+              stepped: false}}, font_style: {bold: false, italic: false, strikethrough: false}},
+        row_format: {background_color: "#F37F00", font_color: !!null '', color_application: {
+            collection_id: az-company-colors, options: {mirror: false, reverse: false,
+              stepped: false}}, font_style: {bold: false, italic: false, strikethrough: false}},
+        field: sales_region.sales_ty, apply_to: allNumericFields}]
+    series_tooltip_options:
+      sales_region.dimension_selector:
+        custom_tooltips_enabled: false
+        style:
+          font_size: 12
+          font_family: Roboto, 'Noto Sans', 'Noto Sans JP', 'Noto Sans CJK KR', 'Noto
+            Sans Arabic UI', 'Noto Sans Devanagari UI', 'Noto Sans Hebrew', 'Noto
+            Sans Thai UI', Helvetica, Arial, sans-serif
+          font_color: "#FFFFFF"
+          background_color: "#262D33"
+          border_radius: 4
+          border_color: transparent
+          box_shadow: none
+          align: left
+        template: |2-
+ 
+                      <div style="padding: 5px 0;">
+<div>Dimension Selector</div>
+<div style="font-weight: bold;">{{ sales_region.dimension_selector }}</div>
+</div><div style="padding: 5px 0;">
+<div>city</div>
+<div style="font-weight: bold;">{{ sales_region.dimension_selector }}</div>
+</div>
+    truncate_column_names: false
+    theme: traditional
+    customTheme: ''
+    layout: fixed
+    minWidthForIndexColumns: true
+    headerFontSize: 12
+    bodyFontSize: 12
+    showTooltip: true
+    showHighlight: true
+    columnOrder: {}
+    rowSubtotals: false
+    colSubtotals: false
+    spanRows: true
+    spanCols: true
+    calculateOthers: true
+    sortColumnsBy: pivots
+    useViewName: false
+    useHeadings: false
+    useShortName: false
+    useUnit: false
+    groupVarianceColumns: true
+    genericLabelForSubtotals: false
+    indexColumn: false
+    transposeTable: false
+    x_axis_gridlines: false
+    y_axis_gridlines: true
+    show_y_axis_labels: true
+    show_y_axis_ticks: true
+    y_axis_tick_density: default
+    y_axis_tick_density_custom: 5
+    show_x_axis_label: true
+    show_x_axis_ticks: true
+    y_axis_scale_mode: linear
+    x_axis_reversed: false
+    y_axis_reversed: false
+    plot_size_by_field: false
+    trellis: ''
+    stacking: ''
+    legend_position: center
+    point_style: none
+    show_value_labels: false
+    label_density: 25
+    x_axis_scale: auto
+    y_axis_combined: true
+    ordering: none
+    show_null_labels: false
+    show_totals_labels: false
+    show_silhouette: false
+    totals_color: "#808080"
+    defaults_version: 1
+    hidden_pivots: {}
+    hidden_fields: []
+    hidden_points_if_no: []
+    listen:
+      Año Fiscal: sales_region.filter_fiscal_year
+      City: sales_region.city
+      Category: sales_region.category_name
+      Category & City: sales_region.p_dimension
+      Team Name: sales_region.team_name
+      Group Name: sales_region.group_name
+    row: 0
+    col: 0
+    width: 24
+    height: 9
+    tab_name: Category Sales Weekly
+  - title: Category Sales Weekly (Copy)
+    name: Category Sales Weekly (Copy)
+    model: mx-fin-8303
+    explore: sales_region
+    type: looker_grid
+    fields: [sales_region.team_name, sales_region.group_name, sales_region.category_name,
+      sales_region.sales_ty, sales_region.sales_variance_pct, sales_region.gross_profit_ty,
+      sales_region.gross_profit_variance_pct, sales_region.GM_ty, sales_region.GM_variance_pct,
+      sales_region.units_ty, sales_region.units_variance_pct, sales_region.UR_ty,
+      sales_region.UR_variance_pct]
+    filters:
+      sales_region.filter_fiscal_year: '2026'
+      sales_region.p_dimension: city
+    sorts: [sales_region.team_name, sales_region.group_name, sales_region.sales_ty
+        desc]
+    subtotals: [sales_region.team_name, sales_region.group_name]
+    limit: 500
+    column_limit: 50
+    total: true
+    show_view_names: false
+    show_row_numbers: false
+    transpose: false
+    truncate_text: true
+    hide_totals: false
+    hide_row_totals: false
+    size_to_fit: false
+    table_theme: white
+    limit_displayed_rows: false
+    enable_conditional_formatting: false
+    header_text_alignment: left
+    header_font_size: '12'
+    rows_font_size: 12
+    conditional_formatting_include_totals: false
+    conditional_formatting_include_nulls: false
+    show_sql_query_menu_options: false
+    show_totals: true
+    show_row_totals: true
+    truncate_header: true
+    minimum_column_width: 75
+    series_labels: {}
+    series_column_widths:
+      sales_region.gross_profit_variance_pct: 144
+      grouped-column-sales_region.team_name: 180
+    series_cell_visualizations:
+      sales_region.sales_ly:
+        is_active: false
+    table_enable_pagination: false
+    table_page_size_options: 20, 50, 100
+    limit_displayed_rows_values:
+      show_hide: hide
+      first_last: first
+      num_rows: 0
+    series_collapsed:
+      sales_region.team_name: true
+      sales_region.group_name: true
+    table_column_hover_highlight_enable: false
+    table_show_headers: true
+    header_font_color: "#FFFFFF"
+    header_background_color: "#202124"
+    header_font_bold: false
+    header_font_italic: false
+    cell_font_size: '12'
+    cell_font_weight: ''
+    cell_font_style: ''
+    cell_text_alignment: ''
+    table_custom_border_enable: false
+    table_custom_border_width:
+    table_custom_border_color: "#dde2eb"
+    table_custom_border_style: solid
+    conditional_formatting: [{type: along a scale..., value: !!null '', fields: !!null '',
+        apply_formatting_to_row: false, cell_format: {background_color: "#F37F00",
+          font_color: !!null '', color_application: {collection_id: az-company-colors,
+            palette_id: az-company-colors-diverging-0, options: {mirror: false, reverse: false,
+              stepped: false}}, font_style: {bold: false, italic: false, strikethrough: false}},
+        row_format: {background_color: "#F37F00", font_color: !!null '', color_application: {
+            collection_id: az-company-colors, options: {mirror: false, reverse: false,
+              stepped: false}}, font_style: {bold: false, italic: false, strikethrough: false}},
+        field: sales_region.sales_ty, apply_to: allNumericFields}]
+    series_tooltip_options:
+      sales_region.dimension_selector:
+        custom_tooltips_enabled: false
+        style:
+          font_size: 12
+          font_family: Roboto, 'Noto Sans', 'Noto Sans JP', 'Noto Sans CJK KR', 'Noto
+            Sans Arabic UI', 'Noto Sans Devanagari UI', 'Noto Sans Hebrew', 'Noto
+            Sans Thai UI', Helvetica, Arial, sans-serif
+          font_color: "#FFFFFF"
+          background_color: "#262D33"
+          border_radius: 4
+          border_color: transparent
+          box_shadow: none
+          align: left
+        template: |2-
+ 
+                      <div style="padding: 5px 0;">
+<div>Dimension Selector</div>
+<div style="font-weight: bold;">{{ sales_region.dimension_selector }}</div>
+</div><div style="padding: 5px 0;">
+<div>city</div>
+<div style="font-weight: bold;">{{ sales_region.dimension_selector }}</div>
+</div>
+    truncate_column_names: false
+    theme: traditional
+    customTheme: ''
+    layout: fixed
+    minWidthForIndexColumns: true
+    headerFontSize: 12
+    bodyFontSize: 12
+    showTooltip: true
+    showHighlight: true
+    columnOrder: {}
+    rowSubtotals: false
+    colSubtotals: false
+    spanRows: true
+    spanCols: true
+    calculateOthers: true
+    sortColumnsBy: pivots
+    useViewName: false
+    useHeadings: false
+    useShortName: false
+    useUnit: false
+    groupVarianceColumns: true
+    genericLabelForSubtotals: false
+    indexColumn: false
+    transposeTable: false
+    x_axis_gridlines: false
+    y_axis_gridlines: true
+    show_y_axis_labels: true
+    show_y_axis_ticks: true
+    y_axis_tick_density: default
+    y_axis_tick_density_custom: 5
+    show_x_axis_label: true
+    show_x_axis_ticks: true
+    y_axis_scale_mode: linear
+    x_axis_reversed: false
+    y_axis_reversed: false
+    plot_size_by_field: false
+    trellis: ''
+    stacking: ''
+    legend_position: center
+    point_style: none
+    show_value_labels: false
+    label_density: 25
+    x_axis_scale: auto
+    y_axis_combined: true
+    ordering: none
+    show_null_labels: false
+    show_totals_labels: false
+    show_silhouette: false
+    totals_color: "#808080"
+    defaults_version: 1
+    hidden_pivots: {}
+    hidden_fields: []
+    hidden_points_if_no: []
+    listen:
+      Año Fiscal: sales_region.filter_fiscal_year
+      City: sales_region.city
+      Category: sales_region.category_name
+      Category & City: sales_region.p_dimension
+      Team Name: sales_region.team_name
+      Group Name: sales_region.group_name
+    row: 9
+    col: 0
+    width: 24
+    height: 9
+    tab_name: Category Sales Weekly
+  - title: Category Sales Daily
+    name: Category Sales Daily
+    model: mx-fin-8303
+    explore: sales_region
+    type: looker_grid
+    fields: [sales_region.dimension_selector, sales_region.sales_ty, sales_region.sales_variance_pct,
+      sales_region.sun_pct, sales_region.mon_pct, sales_region.tue_pct, sales_region.wed_pct,
+      sales_region.thu_pct, sales_region.fri_pct, sales_region.sat_pct]
+    filters:
+      sales_region.filter_fiscal_year: '2026'
+      sales_region.p_dimension: city
+    sorts: [sales_region.dimension_selector]
+    limit: 500
+    column_limit: 50
+    total: true
+    show_view_names: false
+    show_row_numbers: false
+    transpose: false
+    truncate_text: true
+    hide_totals: false
+    hide_row_totals: false
+    size_to_fit: true
+    table_theme: white
+    limit_displayed_rows: false
+    enable_conditional_formatting: false
+    header_text_alignment: center
+    header_font_size: '12'
+    rows_font_size: 12
+    conditional_formatting_include_totals: false
+    conditional_formatting_include_nulls: false
+    show_sql_query_menu_options: false
+    show_totals: true
+    show_row_totals: true
+    truncate_header: false
+    minimum_column_width: 75
+    series_labels: {}
+    series_cell_visualizations:
+      sales_region.sales_ly:
+        is_active: false
+      sales_region.sat_pct:
+        is_active: false
+    series_text_format:
+      sales_region.dimension_selector: {}
+      sales_region.sun_pct:
+        align: center
+      sales_region.mon_pct:
+        align: center
+      sales_region.tue_pct:
+        align: center
+      sales_region.wed_pct:
+        align: center
+      sales_region.thu_pct:
+        align: center
+      sales_region.fri_pct:
+        align: center
+      sales_region.sat_pct:
+        align: center
+    table_enable_pagination: false
+    table_page_size_options: 20, 50, 100
+    limit_displayed_rows_values:
+      show_hide: hide
+      first_last: first
+      num_rows: 0
+    table_column_hover_highlight_enable: false
+    table_show_headers: true
+    header_font_color: "#FFFFFF"
+    header_background_color: "#333333"
+    header_font_bold: false
+    header_font_italic: false
+    cell_font_size: '12'
+    cell_font_weight: ''
+    cell_font_style: ''
+    cell_text_alignment: ''
+    table_custom_border_enable: false
+    table_custom_border_width:
+    table_custom_border_color: "#dde2eb"
+    table_custom_border_style: solid
+    conditional_formatting: [{type: along a scale..., value: !!null '', fields: !!null '',
+        apply_formatting_to_row: false, cell_format: {background_color: "#F37F00",
+          font_color: !!null '', color_application: {collection_id: az-company-colors,
+            palette_id: az-company-colors-diverging-0, options: {mirror: false, reverse: false,
+              stepped: false}}, font_style: {bold: false, italic: false, strikethrough: false}},
+        row_format: {background_color: "#F37F00", font_color: !!null '', color_application: {
+            collection_id: az-company-colors, options: {mirror: false, reverse: false,
+              stepped: false}}, font_style: {bold: false, italic: false, strikethrough: false}},
+        field: sales_region.sales_ty, apply_to: allNumericFields}]
+    series_tooltip_options:
+      sales_region.dimension_selector:
+        custom_tooltips_enabled: false
+        style:
+          font_size: 12
+          font_family: Roboto, 'Noto Sans', 'Noto Sans JP', 'Noto Sans CJK KR', 'Noto
+            Sans Arabic UI', 'Noto Sans Devanagari UI', 'Noto Sans Hebrew', 'Noto
+            Sans Thai UI', Helvetica, Arial, sans-serif
+          font_color: "#FFFFFF"
+          background_color: "#262D33"
+          border_radius: 4
+          border_color: transparent
+          box_shadow: none
+          align: left
+        template: |2-
+ 
+                      <div style="padding: 5px 0;">
+<div>Dimension Selector</div>
+<div style="font-weight: bold;">{{ sales_region.dimension_selector }}</div>
+</div><div style="padding: 5px 0;">
+<div>city</div>
+<div style="font-weight: bold;">{{ sales_region.dimension_selector }}</div>
+</div>
+      sales_region.sat_pct:
+        custom_tooltips_enabled: false
+        style:
+          font_size: 12
+          font_family: Roboto, 'Noto Sans', 'Noto Sans JP', 'Noto Sans CJK KR', 'Noto
+            Sans Arabic UI', 'Noto Sans Devanagari UI', 'Noto Sans Hebrew', 'Noto
+            Sans Thai UI', Helvetica, Arial, sans-serif
+          font_color: "#FFFFFF"
+          background_color: "#262D33"
+          border_radius: 4
+          border_color: transparent
+          box_shadow: none
+          align: left
+        template: |2-
+ 
+                      <div style="padding: 5px 0;">
+<div>Dimension Selector</div>
+<div style="font-weight: bold;">{{ sales_region.dimension_selector }}</div>
+</div><div style="padding: 5px 0;">
+<div>Sales Region SAT</div>
+<div style="font-weight: bold;">{{ sales_region.sat_pct }}</div>
+</div>
+    truncate_column_names: false
+    theme: traditional
+    customTheme: ''
+    layout: fixed
+    minWidthForIndexColumns: true
+    headerFontSize: 12
+    bodyFontSize: 12
+    showTooltip: true
+    showHighlight: true
+    columnOrder: {}
+    rowSubtotals: false
+    colSubtotals: false
+    spanRows: true
+    spanCols: true
+    calculateOthers: true
+    sortColumnsBy: pivots
+    useViewName: false
+    useHeadings: false
+    useShortName: false
+    useUnit: false
+    groupVarianceColumns: true
+    genericLabelForSubtotals: false
+    indexColumn: false
+    transposeTable: false
+    x_axis_gridlines: false
+    y_axis_gridlines: true
+    show_y_axis_labels: true
+    show_y_axis_ticks: true
+    y_axis_tick_density: default
+    y_axis_tick_density_custom: 5
+    show_x_axis_label: true
+    show_x_axis_ticks: true
+    y_axis_scale_mode: linear
+    x_axis_reversed: false
+    y_axis_reversed: false
+    plot_size_by_field: false
+    trellis: ''
+    stacking: ''
+    legend_position: center
+    point_style: none
+    show_value_labels: false
+    label_density: 25
+    x_axis_scale: auto
+    y_axis_combined: true
+    ordering: none
+    show_null_labels: false
+    show_totals_labels: false
+    show_silhouette: false
+    totals_color: "#808080"
+    defaults_version: 1
+    hidden_pivots: {}
+    hidden_fields: []
+    hidden_points_if_no: []
+    listen:
+      Año Fiscal: sales_region.filter_fiscal_year
+      City: sales_region.city
+      Category: sales_region.category_name
+      Category & City: sales_region.p_dimension
+      Team Name: sales_region.team_name
+      Group Name: sales_region.group_name
+    row: 0
+    col: 0
+    width: 24
+    height: 10
+    tab_name: Category Sales Daily
   filters:
   - name: Año Fiscal
     title: Año Fiscal
     type: field_filter
     default_value: '2026'
+    allow_multiple_values: true
+    required: false
+    ui_config:
+      type: range_slider
+      display: inline
     model: mx-fin-8303
     explore: sales_region
+    listens_to_filters: []
     field: sales_region.filter_fiscal_year
-  - name: Semana Fiscal
-    title: Semana Fiscal
+  - name: Category & City
+    title: Category & City
     type: field_filter
-    default_value: '28'
+    default_value: city
+    allow_multiple_values: true
+    required: false
+    ui_config:
+      type: dropdown_menu
+      display: inline
     model: mx-fin-8303
     explore: sales_region
-    field: sales_region.filter_fiscal_week
+    listens_to_filters: []
+    field: sales_region.p_dimension
+  - name: City
+    title: City
+    type: field_filter
+    default_value: ''
+    allow_multiple_values: true
+    required: false
+    ui_config:
+      type: advanced
+      display: popover
+    model: mx-fin-8303
+    explore: sales_region
+    listens_to_filters: [Team Name, Group Name, Category, Category & City]
+    field: sales_region.city
+  - name: Team Name
+    title: Team Name
+    type: field_filter
+    default_value: ''
+    allow_multiple_values: true
+    required: false
+    ui_config:
+      type: checkboxes
+      display: popover
+    model: mx-fin-8303
+    explore: sales_region
+    listens_to_filters: [Group Name, Category, Category & City]
+    field: sales_region.team_name
+  - name: Group Name
+    title: Group Name
+    type: field_filter
+    default_value: ''
+    allow_multiple_values: true
+    required: false
+    ui_config:
+      type: checkboxes
+      display: popover
+    model: mx-fin-8303
+    explore: sales_region
+    listens_to_filters: [Team Name, Category, Category & City]
+    field: sales_region.group_name
   - name: Category
-    title: Categoría
+    title: Category
     type: field_filter
+    default_value: ''
+    allow_multiple_values: true
+    required: false
+    ui_config:
+      type: tag_list
+      display: popover
     model: mx-fin-8303
     explore: sales_region
+    listens_to_filters: [Team Name, Group Name, Category & City]
     field: sales_region.category_name
-
-  elements:
-  - title: Ventas Semanales por Categoría
-    name: weekly_category_analysis
-    model: mx-fin-8303
-    explore: sales_region
-    type: looker_grid
-    fields: [
-      sales_region.category_name,
-      sales_region.sales_ty,
-      sales_region.sales_variance_pct,
-      sales_region.gross_profit_ty,
-      sales_region.gross_profit_variance_pct,
-      sales_region.GM_ty,
-      sales_region.GM_variance_pct,
-      sales_region.units_ty,
-      sales_region.units_variance_pct,
-      sales_region.UR_ty,
-      sales_region.UR_variance_pct
-    ]
-    sorts: [sales_region.sales_ty desc]
-    limit: 500
-    show_view_names: false
-    show_row_numbers: true
-    transpose: false
-    truncate_text: true
-    size_to_fit: true
-    table_theme: white
-    header_font_color: "#FFFFFF"
-    header_background_color: "#202124"
-    listen:
-      Año Fiscal: sales_region.filter_fiscal_year
-      Semana Fiscal: sales_region.filter_fiscal_week
-      Category: sales_region.category_name
-    row: 0
-    col: 0
-    width: 24
-    height: 12
