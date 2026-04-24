@@ -1,0 +1,46 @@
+view: xs__tstore {
+  sql_table_name: `azpr-tdata-mx-fin-8303.cur_store_development_setup.xs__tstore` ;;
+
+  dimension: store {
+    primary_key: yes
+    type: number
+    sql: ${TABLE}.store ;;
+    label: "ID Tienda"
+  }
+
+  dimension: store_name {
+    type: string
+    sql: ${TABLE}.store_name ;;
+    label: "Nombre Tienda"
+  }
+
+  dimension: city {
+    type: string
+    sql: ${TABLE}.city ;;
+    label: "Ciudad"
+  }
+
+  dimension: state {
+    type: string
+    sql: ${TABLE}.state ;;
+    label: "Estado"
+  }
+
+  dimension: samestore_flag {
+    type: string
+    sql: ${TABLE}.samestore_flag ;;
+    label: "Same Store Flag"
+  }
+
+  dimension: country_code {
+    type: string
+    sql: ${TABLE}.country_code ;;
+    label: "Código de País"
+  }
+
+  dimension: district {
+    type: number
+    sql: ${TABLE}.district ;;
+    label: "Distrito"
+  }
+}
