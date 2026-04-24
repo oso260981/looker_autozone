@@ -1,5 +1,5 @@
 - dashboard: category_sales_summary
-  title: Resumen de Ventas por Categoría
+  title: Reporte Maestro de Ventas (Estructura Excel)
   layout: newspaper
   preferred_viewer: dashboards-next
   
@@ -19,19 +19,39 @@
     field: sales_region.category_name
 
   elements:
-  - title: Ventas por Categoría (TY vs LY)
-    name: sales_by_category
+  - title: Análisis Detallado por Categoría
+    name: main_category_table
     model: mx-fin-8303
     explore: sales_region
     type: looker_grid
-    fields: [sales_region.category_name, sales_region.sales_ty, sales_region.sales_ly]
-    sorts: [sales_region.sales_ty desc]
+    fields: [
+      sales_region.group_name,
+      sales_region.director,
+      sales_region.cm,
+      sales_region.customer_type,
+      sales_region.team_name,
+      sales_region.category_name,
+      sales_region.city,
+      sales_region.sales_ytd_ty,
+      sales_region.sales_ytd_ly,
+      sales_region.sales_ytd_variance_pct,
+      sales_region.gp_ytd_ty,
+      sales_region.gp_ytd_ly,
+      sales_region.gp_variance_pct,
+      sales_region.units_ytd_ty,
+      sales_region.units_ytd_ly,
+      sales_region.units_variance_pct,
+      sales_region.sales_ty,
+      sales_region.sales_ly,
+      sales_region.sales_variance_pct
+    ]
+    sorts: [sales_region.sales_ytd_ty desc]
     limit: 500
     show_view_names: false
     show_row_numbers: true
     transpose: false
     truncate_text: true
-    size_to_fit: true
+    size_to_fit: false
     table_theme: white
     header_font_color: "#FFFFFF"
     header_background_color: "#202124"
@@ -41,4 +61,4 @@
     row: 0
     col: 0
     width: 24
-    height: 12
+    height: 15

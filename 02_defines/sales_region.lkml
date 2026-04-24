@@ -1,515 +1,191 @@
-include: "/01_metadata/sales_region.view.lkml"
- 
- 
+include: "/01_metadata/sales_region.view"
+
 view: +sales_region {
- 
- 
-  parameter: p_dimension {
-    type: unquoted
-    allowed_value: {
-      label: "team name"
-      value: "team_name"
-    }
-    allowed_value: {
-      label: "City"
-      value: "city"
-    }
-    default_value: "team_name"
+
+  # --- Dimensiones del Excel (Placeholders) ---
+
+  dimension: group_name {
+    type: string
+    sql: ${TABLE}.group_name ;; # Ya existe en el SQL
+    label: "Group"
   }
- 
- 
- 
-  # --- Filtros (Igual que antes) ---
-  filter: filter_fiscal_year {
-    type: number
-    label: "Año Fiscal"
+
+  dimension: director {
+    type: string
+    sql: '0' ;; # Placeholder
+    label: "Director"
   }
- 
-  filter: filter_fiscal_week {
-    type: number
-    label: "Semana Fiscal"
+
+  dimension: cm {
+    type: string
+    sql: '0' ;; # Placeholder
+    label: "CM"
   }
- 
- 
+
+  dimension: customer_type {
+    type: string
+    sql: '0' ;; # Placeholder
+    label: "Customer Type"
+  }
+
+  dimension: category_name {
+    type: string
+    sql: ${TABLE}.category_name ;; # Ya existe
+    label: "Category"
+  }
+
+  dimension: team_name {
+    type: string
+    sql: ${TABLE}.team_name ;; # Ya existe
+    label: "Team"
+  }
+
+  dimension: city {
+    type: string
+    sql: ${TABLE}.city ;; # Ya existe
+    label: "City"
+  }
+
   dimension: period_type {
-    label: "Tipo de Periodo (TY/LY)"
+    hidden: yes
     type: string
     sql: ${TABLE}.period_type ;;
   }
- 
- 
-  dimension: dimension_selector {
-    label_from_parameter: p_dimension
-    type: string
-    sql:
-    CASE
-      WHEN '{% parameter p_dimension %}' = 'team_name' THEN ${team_name}
-      WHEN '{% parameter p_dimension %}' = 'city' THEN ${city}
-    END ;;
- 
-    drill_fields: [group_name]
-  }
- 
- 
-dimension: city {
-  type: string
-  sql: ${TABLE}.city ;;
-}
- 
-dimension: calendar_date {
-  type: date
-  sql: ${TABLE}.calendar_date ;;
-}
- 
-dimension: category_name {
-  type: string
-  sql: ${TABLE}.category_name ;;
-}
- 
-dimension: team_name {
-    type: string
-    sql: ${TABLE}.team_name ;;
-    drill_fields: [group_name]
-}
- 
-dimension: group_name {
-    type: string
-    sql: ${TABLE}.group_name ;;
-  drill_fields: [category_name]
-}
- 
- 
-dimension: sales {
-  type: number
-  sql: ${TABLE}.sales ;;
-}
- 
-dimension: units {
-  type: number
-  sql: ${TABLE}.units ;;
-}
- 
-dimension: gross_profit {
-  type: number
-  sql: ${TABLE}.gross_profit ;;
-}
- 
- 
-  measure: last_updated_date {
-    label: "Fecha Máxima con Datos"
-    type: date
-    sql: MAX(CAST(${TABLE}.calendar_date AS DATE)) ;;
-  }
- 
- 
-measure: sales_ty {
-  group_label: "Retail"
-  label: "Sales - $"
-  type: sum
-  sql: ${TABLE}.sales ;;
-  filters: [period_type: "TY"]
-  value_format_name: usd_0
-}
- 
-measure: sales_ly {
-  group_label: "Retail"
-  label: "Sales LY"
-  type: sum
-  sql: ${TABLE}.sales ;;
-  filters: [period_type: "LY"]
-  value_format_name: usd_0
-}
- 
-measure: sales_variance_pct {
-  group_label: "Retail"
-  label: "Sales - % vs LY"
-  type: number
-  sql: (${sales_ty} - ${sales_ly}) / NULLIF(${sales_ly}, 0) ;;
-  value_format_name: percent_1
-  drill_fields: [dimension_selector,sales_ty,sales_ly,sales_variance_pct]
-  html:
-  {% if value <0  %}
-<p style="color: red;"> {{ rendered_value }} </p>
-  {% else %}
-<p> {{ rendered_value }} </p>
-  {% endif %} ;;
-}
- 
- 
- 
-  measure: gross_profit_ty {
-    group_label: "Gross Profit"
-    label: "Gross Profit - $"
-    type: sum
-    sql: ${TABLE}.gross_profit ;;
-    filters: [period_type: "TY"]
-    value_format_name: usd_0
-  }
- 
-  measure: gross_profit_ly {
-    group_label: "Gross Profit"
-    label: "Gross Profit LY"
-    type: sum
-    sql: ${TABLE}.gross_profit ;;
-    filters: [period_type: "LY"]
-    value_format_name: usd_0
-  }
- 
-  measure: gross_profit_variance_pct {
-    group_label: "Gross Profit"
-    label: "Gross Profit - % vs LY"
-    type: number
-    sql: (${gross_profit_ty} - ${gross_profit_ly}) / NULLIF(${gross_profit_ly}, 0) ;;
-    value_format_name: percent_1
-    drill_fields: [dimension_selector,gross_profit_ty,gross_profit_ly,gross_profit_variance_pct]
-    html:
-      {% if value <0  %}
-<p style="color: red;"> {{ rendered_value }} </p>
-      {% else %}
-<p> {{ rendered_value }} </p>
-      {% endif %} ;;
-  }
- 
- 
-  measure: units_ty {
-    group_label: "units"
-    label: "units - $"
-    type: sum
-    sql: ${TABLE}.units ;;
-    filters: [period_type: "TY"]
-    value_format: "#,##0.00"
-  }
- 
-  measure: units_ly {
-    group_label: "units"
-    label: "units LY"
-    type: sum
-    sql: ${TABLE}.units ;;
-    filters: [period_type: "LY"]
-    value_format: "#,##0.00"
-  }
- 
-  measure: units_variance_pct {
-    group_label: "units"
-    label: "units - % vs LY"
-    type: number
-    sql: (${units_ty} - ${units_ly}) / NULLIF(${units_ly}, 0) ;;
-    value_format_name: percent_1
-    drill_fields: [dimension_selector,units_ty,units_ly,units_variance_pct]
-    html:
-      {% if value <0  %}
-<p style="color: red;"> {{ rendered_value }} </p>
-      {% else %}
-<p> {{ rendered_value }} </p>
-      {% endif %} ;;
-  }
- 
- 
-  #SAFE_DIVIDE(gross_profit, net_sales) * 100 AS GM
- 
-  measure: GM_ty {
-    group_label: "GM"
-    label: "GM - $"
-    type: sum
-    sql:SAFE_DIVIDE (${TABLE}.gross_profit,${TABLE}.sales) ;;
-    filters: [period_type: "TY"]
-    value_format: "#,##0.00"
-  }
- 
-  measure: GM_ly {
-    group_label: "GM"
-    label: "GM LY"
-    type: sum
-    sql:SAFE_DIVIDE (${TABLE}.gross_profit,${TABLE}.sales) ;;
-    filters: [period_type: "LY"]
-    value_format: "#,##0.00"
-  }
- 
-  measure: GM_variance_pct {
-    group_label: "GM"
-    label: "GM - % vs LY"
-    type: number
-    sql: (${GM_ty} - ${GM_ly}) / NULLIF(${GM_ly}, 0) ;;
-    value_format_name: percent_1
-    drill_fields: [dimension_selector,GM_ty,GM_ly,GM_variance_pct]
-    html:
-      {% if value <0  %}
-<p style="color: red;"> {{ rendered_value }} </p>
-      {% else %}
-<p> {{ rendered_value }} </p>
-      {% endif %} ;;
-  }
- 
- 
-  #UR = Net Sales / Quantity
- 
- 
-  measure: UR_ty {
-    group_label: "UR"
-    label: "UR - $"
-    type: sum
-    sql: ${TABLE}.sales / NULLIF(${TABLE}.units,0) ;;
-    filters: [period_type: "TY"]
-    value_format_name: usd_0
-  }
- 
- 
-  measure: UR_ly {
-    group_label: "UR"
-    label: "UR LY"
-    type: sum
-    sql: ${TABLE}.sales / NULLIF(${TABLE}.units,0) ;;
-    filters: [period_type: "LY"]
-    value_format_name: usd_0
-  }
- 
-  measure: UR_variance_pct {
-    group_label: "UR"
-    label: "UR - % vs LY"
-    type: number
-    sql: (${UR_ty} - ${UR_ly}) / NULLIF(${UR_ly}, 0) ;;
-    value_format_name: percent_1
-    drill_fields: [dimension_selector,UR_ty,UR_ly,UR_variance_pct]
-    html:
-      {% if value <0  %}
-<p style="color: red;"> {{ rendered_value }} </p>
-      {% else %}
-<p> {{ rendered_value }} </p>
-      {% endif %} ;;
-  }
- 
- 
- 
-    # ---------------------------------------------------------
-    # BLOQUE: CHANGE BY DAY (RETAIL)
-    # ---------------------------------------------------------
- 
-    # --- DOMINGO (SUN) ---
-    measure: sales_ty_sun {
-      hidden: yes
-      type: sum
-      sql: ${TABLE}.sales ;;
-      filters: [period_type: "TY", calendar.day_name: "Sunday"]
- 
-    }
-    measure: sales_ly_sun {
-      hidden: yes
-      type: sum
-      sql: ${TABLE}.sales ;;
-      filters: [period_type: "LY", calendar.day_name: "Sunday"]
-    }
-    measure: sun_pct {
-      group_label: "Retail Day"
-      label: "SUN"
-      type: number
-      sql: 1.0 * (${sales_ty_sun} - ${sales_ly_sun}) / NULLIF(${sales_ly_sun}, 0) ;;
-      value_format_name: percent_1
-      drill_fields: [dimension_selector,sales_ty_sun,sales_ly_sun,sun_pct]
-      html: {% if value < 0 %}<span style="color:#E4002B">{{ rendered_value }}</span>{% else %}{{ rendered_value }}{% endif %}
- 
- 
-      ;;
- 
-    }
- 
-    # --- LUNES (MON) ---
-    measure: sales_ty_mon {
-      hidden: yes
-      type: sum
-      sql: ${TABLE}.sales ;;
-      filters: [period_type: "TY", calendar.day_name: "Monday"]
-    }
-    measure: sales_ly_mon {
-      hidden: yes
-      type: sum
-      sql: ${TABLE}.sales ;;
-      filters: [period_type: "LY", calendar.day_name: "Monday"]
-    }
-    measure: mon_pct {
-      group_label: "Retail Day"
-      label: "MON"
-      type: number
-      sql: 1.0 * (${sales_ty_mon} - ${sales_ly_mon}) / NULLIF(${sales_ly_mon}, 0) ;;
-      value_format_name: percent_1
-      drill_fields: [dimension_selector,sales_ty_mon,sales_ly_mon,mon_pct]
-      html: {% if value < 0 %}<span style="color:#E4002B">{{ rendered_value }}</span>{% else %}{{ rendered_value }}{% endif %} ;;
-    }
- 
-    # --- MARTES (TUE) ---
-    measure: sales_ty_tue {
-      hidden: yes
-      type: sum
-      sql: ${TABLE}.sales ;;
-      filters: [period_type: "TY", calendar.day_name: "Tuesday"]
-    }
-    measure: sales_ly_tue {
-      hidden: yes
-      type: sum
-      sql: ${TABLE}.sales ;;
-      filters: [period_type: "LY", calendar.day_name: "Tuesday"]
-    }
-    measure: tue_pct {
-      group_label: "Retail Day"
-      label: "TUE"
-      type: number
-      sql: 1.0 * (${sales_ty_tue} - ${sales_ly_tue}) / NULLIF(${sales_ly_tue}, 0) ;;
-      value_format_name: percent_1
-      drill_fields: [dimension_selector,sales_ty_tue,sales_ly_tue,tue_pct]
-      html: {% if value < 0 %}<span style="color:#E4002B">{{ rendered_value }}</span>{% else %}{{ rendered_value }}{% endif %} ;;
-    }
- 
-    # --- MIÉRCOLES (WED) ---
-    measure: sales_ty_wed {
-      hidden: yes
-      type: sum
-      sql: ${TABLE}.sales ;;
-      filters: [period_type: "TY", calendar.day_name: "Wednesday"]
-    }
-    measure: sales_ly_wed {
-      hidden: yes
-      type: sum
-      sql: ${TABLE}.sales ;;
-      filters: [period_type: "LY", calendar.day_name: "Wednesday"]
-    }
-    measure: wed_pct {
-      group_label: "Retail Day"
-      label: "WED"
-      type: number
-      sql: 1.0 * (${sales_ty_wed} - ${sales_ly_wed}) / NULLIF(${sales_ly_wed}, 0) ;;
-      value_format_name: percent_1
-      drill_fields: [dimension_selector,sales_ty_wed,sales_ly_wed,wed_pct]
-      html: {% if value < 0 %}<span style="color:#E4002B">{{ rendered_value }}</span>{% else %}{{ rendered_value }}{% endif %} ;;
-    }
- 
-    # --- JUEVES (THU) ---
-    measure: sales_ty_thu {
-      hidden: yes
-      type: sum
-      sql: ${TABLE}.sales ;;
-      filters: [period_type: "TY", calendar.day_name: "Thursday"]
-    }
-    measure: sales_ly_thu {
-      hidden: yes
-      type: sum
-      sql: ${TABLE}.sales ;;
-      filters: [period_type: "LY", calendar.day_name: "Thursday"]
-    }
-    measure: thu_pct {
-      group_label: "Retail Day"
-      label: "THU"
-      type: number
-      sql: 1.0 * (${sales_ty_thu} - ${sales_ly_thu}) / NULLIF(${sales_ly_thu}, 0) ;;
-      value_format_name: percent_1
-      drill_fields: [dimension_selector,sales_ty_thu,sales_ly_thu,thu_pct]
-      html: {% if value < 0 %}<span style="color:#E4002B">{{ rendered_value }}</span>{% else %}{{ rendered_value }}{% endif %} ;;
-    }
- 
-    # --- VIERNES (FRI) ---
-    measure: sales_ty_fri {
-      hidden: yes
-      type: sum
-      sql: ${TABLE}.sales ;;
-      filters: [period_type: "TY", calendar.day_name: "Friday"]
-    }
-    measure: sales_ly_fri {
-      hidden: yes
-      type: sum
-      sql: ${TABLE}.sales ;;
-      filters: [period_type: "LY", calendar.day_name: "Friday"]
-    }
-    measure: fri_pct {
-      group_label: "Retail Day"
-      label: "FRI"
-      type: number
-      sql: 1.0 * (${sales_ty_fri} - ${sales_ly_fri}) / NULLIF(${sales_ly_fri}, 0) ;;
-      value_format_name: percent_1
-      drill_fields: [dimension_selector,sales_ty_fri,sales_ly_fri,fri_pct]
-      html: {% if value < 0 %}<span style="color:#E4002B">{{ rendered_value }}</span>{% else %}{{ rendered_value }}{% endif %} ;;
-    }
- 
-    # --- SÁBADO (SAT) ---
-    measure: sales_ty_sat {
-      hidden: yes
-      type: sum
-      sql: ${TABLE}.sales ;;
-      filters: [period_type: "TY", calendar.day_name: "Saturday"]
-    }
-    measure: sales_ly_sat {
-      hidden: yes
-      type: sum
-      sql: ${TABLE}.sales ;;
-      filters: [period_type: "LY", calendar.day_name: "Saturday"]
-    }
-    measure: sat_pct {
-      group_label: "Retail Day"
-      label: "SAT"
-      type: number
-      sql: 1.0 * (${sales_ty_sat} - ${sales_ly_sat}) / NULLIF(${sales_ly_sat}, 0) ;;
-      value_format_name: percent_1
-      drill_fields: [dimension_selector,sales_ty_sat,sales_ly_sat,sat_pct]
-      html: {% if value < 0 %}<span style="color:#E4002B">{{ rendered_value }}</span>{% else %}{{ rendered_value }}{% endif %} ;;
-    }
- 
+
   dimension: is_ytd_ty {
     hidden: yes
     type: number
     sql: ${TABLE}.is_ytd_ty ;;
   }
- 
+
   dimension: is_ytd_ly {
     hidden: yes
     type: number
     sql: ${TABLE}.is_ytd_ly ;;
   }
- 
+
+  # --- Filtros ---
+
+  filter: filter_fiscal_year {
+    type: number
+    label: "Año Fiscal"
+  }
+
+  filter: filter_fiscal_week {
+    type: number
+    label: "Semana Fiscal"
+  }
+
+  # --- Medidas Semanales (LW) ---
+
+  measure: sales_ty {
+    group_label: "Weekly"
+    label: "Wk31 2026 Sales"
+    type: sum
+    sql: ${TABLE}.sales ;;
+    filters: [period_type: "TY"]
+    value_format_name: usd_0
+  }
+
+  measure: sales_ly {
+    group_label: "Weekly"
+    label: "Wk31 2025 Sales"
+    type: sum
+    sql: ${TABLE}.sales ;;
+    filters: [period_type: "LY"]
+    value_format_name: usd_0
+  }
+
+  measure: sales_variance_pct {
+    group_label: "Weekly"
+    label: "Sales % Chg (Wk)"
+    type: number
+    sql: (${sales_ty} - ${sales_ly}) / NULLIF(${sales_ly}, 0) ;;
+    value_format_name: percent_1
+  }
+
   # --- Medidas YTD ---
- 
+
   measure: sales_ytd_ty {
-    group_label: "Retail YTD"
-    label: "Sales YTD - $"
+    group_label: "YTD"
+    label: "YTD 2026 Sales"
     type: sum
     sql: ${TABLE}.sales ;;
     filters: [is_ytd_ty: "1"]
     value_format_name: usd_0
   }
- 
+
   measure: sales_ytd_ly {
-    group_label: "Retail YTD"
-    label: "Sales YTD LY - $"
+    group_label: "YTD"
+    label: "YTD 2025 Sales"
     type: sum
     sql: ${TABLE}.sales ;;
     filters: [is_ytd_ly: "1"]
     value_format_name: usd_0
   }
- 
+
   measure: sales_ytd_variance_pct {
-    group_label: "Retail YTD"
-    label: "Sales YTD - % vs LY"
+    group_label: "YTD"
+    label: "Sales % Chg (YTD)"
     type: number
     sql: (${sales_ytd_ty} - ${sales_ytd_ly}) / NULLIF(${sales_ytd_ly}, 0) ;;
     value_format_name: percent_1
-    html:
-      {% if value < 0 %}
-        <p style="color: red;"> {{ rendered_value }} </p>
-      {% else %}
-        <p> {{ rendered_value }} </p>
-      {% endif %} ;;
   }
- 
+
+  measure: gp_ytd_ty {
+    group_label: "YTD"
+    label: "YTD 2026 GP"
+    type: sum
+    sql: ${TABLE}.gross_profit ;;
+    filters: [is_ytd_ty: "1"]
+    value_format_name: usd_0
+  }
+
+  measure: gp_ytd_ly {
+    group_label: "YTD"
+    label: "YTD 2025 GP"
+    type: sum
+    sql: ${TABLE}.gross_profit ;;
+    filters: [is_ytd_ly: "1"]
+    value_format_name: usd_0
+  }
+
+  measure: gp_variance_pct {
+    group_label: "YTD"
+    label: "GP % Chg"
+    type: number
+    sql: (${gp_ytd_ty} - ${gp_ytd_ly}) / NULLIF(${gp_ytd_ly}, 0) ;;
+    value_format_name: percent_1
+  }
+
+  measure: units_ytd_ty {
+    group_label: "YTD"
+    label: "YTD 2026 Units"
+    type: sum
+    sql: ${TABLE}.units ;;
+    filters: [is_ytd_ty: "1"]
+    value_format: "#,##0"
+  }
+
+  measure: units_ytd_ly {
+    group_label: "YTD"
+    label: "YTD 2025 Units"
+    type: sum
+    sql: ${TABLE}.units ;;
+    filters: [is_ytd_ly: "1"]
+    value_format: "#,##0"
+  }
+
+  measure: units_variance_pct {
+    group_label: "YTD"
+    label: "Units % Chg"
+    type: number
+    sql: (${units_ytd_ty} - ${units_ytd_ly}) / NULLIF(${units_ytd_ly}, 0) ;;
+    value_format_name: percent_1
+  }
+
   measure: count {
     type: count
-    drill_fields: [detail*]
-  }
- 
-  set: detail {
-    fields: [
-      city,
-      category_name,
-      sales,
-      units,
-      gross_profit,
-      sun_pct,
-      sales_ly_sun
-    ]
+    drill_fields: [category_name, team_name, sales_ytd_ty]
   }
 }
