@@ -128,10 +128,45 @@ measure: sales_variance_pct {
   value_format_name: percent_1
   drill_fields: [dimension_selector,sales_ty,sales_ly,sales_variance_pct]
   html:
-  {% if value <0  %}
-<p style="color: red;"> {{ rendered_value }} </p>
+  {% if value < 0  %}
+  <p style="color: red;"> {{ rendered_value }} </p>
   {% else %}
-<p> {{ rendered_value }} </p>
+  <p> {{ rendered_value }} </p>
+  {% endif %} ;;
+}
+
+# --- Last 8 Weeks (L8W) ---
+
+measure: sales_l8w_ty {
+  group_label: "Retail L8W"
+  label: "L8wks 2026 Sales"
+  type: sum
+  sql: ${TABLE}.sales ;;
+  filters: [period_type: "TY", is_l8w: "yes"]
+  value_format_name: usd_0
+}
+
+measure: sales_l8w_ly {
+  group_label: "Retail L8W"
+  label: "L8wks 2025 Sales"
+  type: sum
+  sql: ${TABLE}.sales ;;
+  filters: [period_type: "LY", is_l8w: "yes"]
+  value_format_name: usd_0
+}
+
+measure: sales_l8w_variance_pct {
+  group_label: "Retail L8W"
+  label: "L8wks Sales % Chg"
+  type: number
+  sql: (${sales_l8w_ty} - ${sales_l8w_ly}) / NULLIF(${sales_l8w_ly}, 0) ;;
+  value_format_name: percent_1
+  drill_fields: [dimension_selector, sales_l8w_ty, sales_l8w_ly, sales_l8w_variance_pct]
+  html:
+  {% if value < 0  %}
+  <p style="color: red;"> {{ rendered_value }} </p>
+  {% else %}
+  <p> {{ rendered_value }} </p>
   {% endif %} ;;
 }
  
