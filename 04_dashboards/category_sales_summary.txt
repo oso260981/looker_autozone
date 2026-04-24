@@ -24,7 +24,7 @@
     model: mx-fin-8303
     explore: sales_region
     type: looker_grid
-    fields: [sales_region.category_name, sales_region.sales_ty]
+    fields: [sales_region.category_name, sales_region.sales_ty, sales_region.sales_ly]
     sorts: [sales_region.sales_ty desc]
     limit: 500
     show_view_names: false
@@ -41,32 +41,4 @@
     row: 0
     col: 0
     width: 24
-    height: 10
-
-  - title: YTD 2026 Sales
-    name: ytd_2026_sales
-    model: mx-fin-8303
-    explore: sales_region
-    type: single_value
-    fields: [sales_region.sales_ytd_ty]
-    listen:
-      Año Fiscal: sales_region.filter_fiscal_year
-      Category: sales_region.category_name
-    row: 10
-    col: 0
-    width: 12
-    height: 4
-
-  - title: YTD 2025 Sales
-    name: ytd_2025_sales
-    model: mx-fin-8303
-    explore: sales_region
-    type: single_value
-    fields: [sales_region.sales_ytd_ly]
-    listen:
-      Año Fiscal: sales_region.filter_fiscal_year
-      Category: sales_region.category_name
-    row: 10
-    col: 12
-    width: 12
-    height: 4
+    height: 12
