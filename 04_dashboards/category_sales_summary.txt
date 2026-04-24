@@ -14,7 +14,7 @@
   - name: Semana Fiscal
     title: Semana Fiscal
     type: field_filter
-    default_value: '28'
+    default_value: '31'
     model: mx-fin-8303
     explore: sales_region
     field: sales_region.filter_fiscal_week
