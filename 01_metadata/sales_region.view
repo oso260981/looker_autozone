@@ -6,10 +6,14 @@ view: sales_region {
           MIN(fiscal.year.start_date) as y_start, -- Inicio del año fiscal actual
           MIN(fiscal.week.start_date) as ty_start,
           MAX(fiscal.week.end_date) as ty_end,
+          -- Calcular inicio de L8W (8 semanas atrás desde el fin de la semana actual)
+          DATE_SUB(MAX(fiscal.week.end_date), INTERVAL 55 DAY) as ty_l8w_start,
           -- Para LY (Año Anterior)
           MIN(fiscal.misc.prior_year_date) as ly_start,
           MAX(fiscal.misc.prior_year_date) as ly_end,
-          -- Inicio del año fiscal anterior (aproximado por el primer prior_year_date del inicio del año actual)
+          -- Calcular inicio de L8W LY (8 semanas atrás desde el fin de la semana anterior)
+          DATE_SUB(MAX(fiscal.misc.prior_year_date), INTERVAL 55 DAY) as ly_l8w_start,
+          -- Inicio del año fiscal anterior
           (SELECT MIN(fiscal.misc.prior_year_date) 
            FROM `azpr-tdata-mx-fin-8303.cdsa_enterprise_ref.calendar` 
            WHERE date = (SELECT MIN(fiscal.year.start_date) FROM `azpr-tdata-mx-fin-8303.cdsa_enterprise_ref.calendar` 
@@ -25,12 +29,18 @@ view: sales_region {
         e.team_name,
         e.group_name,
         e.category_name,
-        -- Period Type para Semana Seleccionada (lo que ya tenías)
+        -- Period Type para Semana Seleccionada
         CASE
           WHEN a.calendar_date BETWEEN (SELECT ty_start FROM period_lookup) AND (SELECT ty_end FROM period_lookup) THEN 'TY'
           WHEN a.calendar_date BETWEEN (SELECT ly_start FROM period_lookup) AND (SELECT ly_end FROM period_lookup) THEN 'LY'
         END as period_type,
-        -- Banderas para YTD (Desde inicio de año hasta fin de semana seleccionada)
+        -- Bandera para L8W (Últimas 8 semanas)
+        CASE 
+          WHEN (a.calendar_date BETWEEN (SELECT ty_l8w_start FROM period_lookup) AND (SELECT ty_end FROM period_lookup)) 
+            OR (a.calendar_date BETWEEN (SELECT ly_l8w_start FROM period_lookup) AND (SELECT ly_end FROM period_lookup)) THEN 'yes' 
+          ELSE 'no' 
+        END as is_l8w,
+        -- Banderas para YTD
         CASE WHEN a.calendar_date BETWEEN (SELECT y_start FROM period_lookup) AND (SELECT ty_end FROM period_lookup) THEN 1 ELSE 0 END as is_ytd_ty,
         CASE WHEN a.calendar_date BETWEEN (SELECT ly_y_start FROM period_lookup) AND (SELECT ly_end FROM period_lookup) THEN 1 ELSE 0 END as is_ytd_ly,
         SUM(a.net_sales) as sales,
@@ -41,12 +51,14 @@ view: sales_region {
       LEFT JOIN `azpr-tdata-mx-fin-8303.cur_merchandising_catalog_product.xs__tazitem` d ON d.item = a.sku
       LEFT JOIN `azpr-tdata-mx-fin-8303.ba_merchandising_mx.cat__merch_team` e ON d.major_dept = e.major_category_nb AND d.minor_dept = e.minor_category_nb
       WHERE
-        -- Ampliamos el WHERE para cubrir todo el rango YTD
+        -- Ampliamos el WHERE para cubrir YTD y L8W (que ya está dentro de YTD normalmente, pero por seguridad)
         (a.calendar_date BETWEEN (SELECT y_start FROM period_lookup) AND (SELECT ty_end FROM period_lookup)
-        OR a.calendar_date BETWEEN (SELECT ly_y_start FROM period_lookup) AND (SELECT ly_end FROM period_lookup))
+        OR a.calendar_date BETWEEN (SELECT ly_y_start FROM period_lookup) AND (SELECT ly_end FROM period_lookup)
+        OR a.calendar_date BETWEEN (SELECT ty_l8w_start FROM period_lookup) AND (SELECT ty_end FROM period_lookup)
+        OR a.calendar_date BETWEEN (SELECT ly_l8w_start FROM period_lookup) AND (SELECT ly_end FROM period_lookup))
         AND b.country_code = 'MEX'
         AND b.samestore_flag = 'S'
-      GROUP BY 1, 2, 3, 4, 5, 6, 7, 8
+      GROUP BY 1, 2, 3, 4, 5, 6, 7, 8, 9
     ;;
   }
 }
