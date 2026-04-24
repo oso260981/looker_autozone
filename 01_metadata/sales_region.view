@@ -1,24 +1,11 @@
 view: sales_region {
   derived_table: {
     sql: 
-      WITH period_lookup AS (
-        SELECT
-          MIN(fiscal.year.start_date) as y_start, 
-          MIN(fiscal.week.start_date) as ty_start,
-          MAX(fiscal.week.end_date) as ty_end,
-          -- Calcular inicio de L8W (8 semanas atrás)
-          DATE_SUB(MAX(fiscal.week.end_date), INTERVAL 55 DAY) as ty_l8w_start,
-          -- Para LY
-          MIN(fiscal.misc.prior_year_date) as ly_start,
-          MAX(fiscal.misc.prior_year_date) as ly_end,
-          -- Calcular inicio de L8W LY
-          DATE_SUB(MAX(fiscal.misc.prior_year_date), INTERVAL 55 DAY) as ly_l8w_start,
-          -- Inicio del año fiscal anterior
-          (SELECT MIN(calendar_ly.fiscal.misc.prior_year_date) 
-           FROM `azpr-tdata-mx-fin-8303.cdsa_enterprise_ref.calendar` as calendar_ly
-           WHERE calendar_ly.date = (SELECT MIN(calendar_ty.fiscal.year.start_date) 
-                                   FROM `azpr-tdata-mx-fin-8303.cdsa_enterprise_ref.calendar` as calendar_ty
-                                   WHERE {% condition filter_fiscal_year %} calendar_ty.fiscal.year.year {% endcondition %})) as ly_y_start
+      WITH reference_info AS (
+        -- Paso 1: Obtener la fecha de referencia (Filtro o Hoy)
+        SELECT 
+          MAX(fiscal.week.end_date) as ref_end_date,
+          MAX(fiscal.misc.prior_year_date) as ref_ly_end_date
         FROM `azpr-tdata-mx-fin-8303.cdsa_enterprise_ref.calendar`
         WHERE
           {% condition filter_fiscal_year %} fiscal.year.year {% endcondition %}
@@ -29,6 +16,30 @@ view: sales_region {
               fiscal.week.start_date <= CURRENT_DATE() AND fiscal.week.end_date >= CURRENT_DATE()
             {% endif %}
           )
+      ),
+      period_lookup AS (
+        -- Paso 2: Calcular todos los periodos basados en la referencia
+        SELECT
+          MIN(c.fiscal.year.start_date) as y_start, 
+          MIN(c.fiscal.week.start_date) as ty_start,
+          r.ref_end_date as ty_end,
+          -- L8W (56 días atrás)
+          DATE_SUB(r.ref_end_date, INTERVAL 55 DAY) as ty_l8w_start,
+          -- L18W (126 días atrás para tendencia larga)
+          DATE_SUB(r.ref_end_date, INTERVAL 125 DAY) as ty_18w_start,
+          -- LY (Año anterior)
+          r.ref_ly_end_date as ly_end,
+          DATE_SUB(r.ref_ly_end_date, INTERVAL 6 DAY) as ly_start,
+          DATE_SUB(r.ref_ly_end_date, INTERVAL 55 DAY) as ly_l8w_start,
+          -- Inicio Fiscal LY
+          (SELECT MIN(calendar_ly.fiscal.misc.prior_year_date) 
+           FROM `azpr-tdata-mx-fin-8303.cdsa_enterprise_ref.calendar` as calendar_ly
+           WHERE calendar_ly.date = (SELECT MIN(calendar_ty.fiscal.year.start_date) 
+                                   FROM `azpr-tdata-mx-fin-8303.cdsa_enterprise_ref.calendar` as calendar_ty
+                                   WHERE {% condition filter_fiscal_year %} calendar_ty.fiscal.year.year {% endcondition %})) as ly_y_start
+        FROM `azpr-tdata-mx-fin-8303.cdsa_enterprise_ref.calendar` c
+        CROSS JOIN reference_info r
+        WHERE c.date = r.ref_end_date
       )
       SELECT
         a.calendar_date,
@@ -36,23 +47,28 @@ view: sales_region {
         e.team_name,
         e.group_name,
         e.category_name,
-        -- year_type: TY para actual, LY para anterior
+        -- year_type: TY o LY
         CASE
           WHEN a.calendar_date BETWEEN p.y_start AND p.ty_end THEN 'TY'
           WHEN a.calendar_date BETWEEN p.ly_y_start AND p.ly_end THEN 'LY'
         END as year_type,
-        -- period_type: Solo para la semana seleccionada o actual
+        -- period_type: Semana seleccionada
         CASE
           WHEN a.calendar_date BETWEEN p.ty_start AND p.ty_end THEN 'TY'
           WHEN a.calendar_date BETWEEN p.ly_start AND p.ly_end THEN 'LY'
         END as period_type,
-        -- is_l8w: Últimas 8 semanas desde la referencia
+        -- is_l8w: Últimas 8 semanas
         CASE 
           WHEN (a.calendar_date BETWEEN p.ty_l8w_start AND p.ty_end) 
             OR (a.calendar_date BETWEEN p.ly_l8w_start AND p.ly_end) THEN 'yes' 
           ELSE 'no' 
         END as is_l8w,
-        -- Banderas para YTD
+        -- is_18w: Rango de 18 semanas que pediste
+        CASE 
+          WHEN a.calendar_date BETWEEN p.ty_18w_start AND p.ty_end THEN 'yes' 
+          ELSE 'no' 
+        END as is_18w,
+        -- Banderas YTD
         CASE WHEN a.calendar_date BETWEEN p.y_start AND p.ty_end THEN 1 ELSE 0 END as is_ytd_ty,
         CASE WHEN a.calendar_date BETWEEN p.ly_y_start AND p.ly_end THEN 1 ELSE 0 END as is_ytd_ly,
         SUM(a.net_sales) as sales,
@@ -64,11 +80,12 @@ view: sales_region {
       LEFT JOIN `azpr-tdata-mx-fin-8303.cur_merchandising_catalog_product.xs__tazitem` d ON d.item = a.sku
       LEFT JOIN `azpr-tdata-mx-fin-8303.ba_merchandising_mx.cat__merch_team` e ON d.major_dept = e.major_category_nb AND d.minor_dept = e.minor_category_nb
       WHERE
+        -- Filtramos por el rango más largo (YTD) para tener todo cubierto
         (a.calendar_date BETWEEN p.y_start AND p.ty_end
          OR a.calendar_date BETWEEN p.ly_y_start AND p.ly_end)
         AND b.country_code = 'MEX'
         AND b.samestore_flag = 'S'
-      GROUP BY 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+      GROUP BY 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
     ;;
   }
 }
