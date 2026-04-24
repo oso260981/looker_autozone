@@ -1,5 +1,5 @@
 - dashboard: category_sales_summary
-  title: Reporte Maestro de Ventas (Estructura Excel)
+  title: Resumen de Ventas por Categoría (Estilo Report Sales)
   layout: newspaper
   preferred_viewer: dashboards-next
   
@@ -11,6 +11,13 @@
     model: mx-fin-8303
     explore: sales_region
     field: sales_region.filter_fiscal_year
+  - name: Semana Fiscal
+    title: Semana Fiscal
+    type: field_filter
+    default_value: '28'
+    model: mx-fin-8303
+    explore: sales_region
+    field: sales_region.filter_fiscal_week
   - name: Category
     title: Categoría
     type: field_filter
@@ -19,46 +26,39 @@
     field: sales_region.category_name
 
   elements:
-  - title: Análisis Detallado por Categoría
-    name: main_category_table
+  - title: Ventas Semanales por Categoría
+    name: weekly_category_analysis
     model: mx-fin-8303
     explore: sales_region
     type: looker_grid
     fields: [
-      sales_region.group_name,
-      sales_region.director,
-      sales_region.cm,
-      sales_region.customer_type,
-      sales_region.team_name,
       sales_region.category_name,
-      sales_region.city,
-      sales_region.sales_ytd_ty,
-      sales_region.sales_ytd_ly,
-      sales_region.sales_ytd_variance_pct,
-      sales_region.gp_ytd_ty,
-      sales_region.gp_ytd_ly,
-      sales_region.gp_variance_pct,
-      sales_region.units_ytd_ty,
-      sales_region.units_ytd_ly,
-      sales_region.units_variance_pct,
       sales_region.sales_ty,
-      sales_region.sales_ly,
-      sales_region.sales_variance_pct
+      sales_region.sales_variance_pct,
+      sales_region.gross_profit_ty,
+      sales_region.gross_profit_variance_pct,
+      sales_region.GM_ty,
+      sales_region.GM_variance_pct,
+      sales_region.units_ty,
+      sales_region.units_variance_pct,
+      sales_region.UR_ty,
+      sales_region.UR_variance_pct
     ]
-    sorts: [sales_region.sales_ytd_ty desc]
+    sorts: [sales_region.sales_ty desc]
     limit: 500
     show_view_names: false
     show_row_numbers: true
     transpose: false
     truncate_text: true
-    size_to_fit: false
+    size_to_fit: true
     table_theme: white
     header_font_color: "#FFFFFF"
     header_background_color: "#202124"
     listen:
       Año Fiscal: sales_region.filter_fiscal_year
+      Semana Fiscal: sales_region.filter_fiscal_week
       Category: sales_region.category_name
     row: 0
     col: 0
     width: 24
-    height: 15
+    height: 12
