@@ -31,7 +31,7 @@
     model: mx-fin-8303
     explore: sales_region
     type: looker_grid
-    fields: [sales_region.category_name, sales_region.sales_ty, sales_region.sales_ly, sales_region.sales_variance_pct]
+    fields: [sales_region.category_name, sales_region.sales_ty]
     sorts: [sales_region.sales_ty desc]
     limit: 500
     show_view_names: false
